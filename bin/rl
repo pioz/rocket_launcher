@@ -1,0 +1,88 @@
+#!/usr/bin/env ruby
+
+#$LOAD_PATH << 'lib' << 'ext'
+
+require 'readline'
+require 'etc'
+require 'optparse'
+require 'rocket_launcher'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: rl <command> [<options>]'
+  opts.separator ''
+  opts.separator 'Control a USB rocket launcher device.'
+  opts.separator "Valid commands are: #{RocketLauncher::ACTIONS.keys.join(', ')}."
+  opts.separator 'Options:'
+  opts.on('-c', '--command COMMAND', 'Command to execute') do |c|
+    options[:c] = c
+  end
+  opts.on('-t', '--time TIME', Float, 'Duration time for the command') do |t|
+    options[:t] = t
+  end
+  opts.on('-f', '--file COMMAND_LIST', 'Load list of commands by specific file') do |f|
+    options[:f] = f
+  end
+  opts.on('-i', '--iterative', 'Open a command console') do |i|
+    options[:i] = i
+  end
+  opts.on_tail('-v', '--version', 'Print version') { puts RocketLauncher::VERSION; exit }
+  opts.on_tail('-h', '--help', 'Show this help message') { puts opts; exit }
+end
+begin
+  parser.parse!(ARGV)
+rescue => e
+  puts parser.help; exit
+end
+if ARGV.size > 0
+  puts parser.help; exit
+end
+if options[:c] && !RocketLauncher::ACTIONS.keys.include?(options[:c].downcase.to_sym)
+  puts 'Invalid command'; exit
+end
+
+def run_commands(rl, commands)
+  commands.each do |command|
+    c, time = command.split(/\s+/)
+    begin
+      if time && rl.method(c).arity == 2
+        rl.send(c, time.to_f)
+      else
+        rl.send(c)
+      end
+    rescue NoMethodError
+      puts 'Invalid command'
+    end
+  end
+end
+
+# OK START
+
+if options[:i]
+  rl = RocketLauncher.new
+  loop do
+    begin
+      line = Readline::readline("#{Etc.getlogin}@rocket_launcher> ")
+      break if line.nil? || line == 'quit'
+      Readline::HISTORY.push(line)
+      commands = line.split(/,\s*/)
+      run_commands(rl, commands)
+    rescue Interrupt => e
+      rl.stop
+    end
+  end
+elsif options[:f]
+  rl = RocketLauncher.new
+  data = File.open(options[:f]).read
+  lines = data.split
+  run_commands(rl, lines)
+elsif options[:c]
+  rl = RocketLauncher.new
+  if options[:t] && rl.method(options[:c]).arity == 2
+    rl.send(options[:c], options[:t])
+  else
+    rl.send(options[:c])
+  end
+else
+  puts parser.help; exit
+end
