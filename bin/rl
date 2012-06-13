@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-#$LOAD_PATH << 'lib' << 'ext'
+$LOAD_PATH << 'lib' << 'ext'
 
 require 'readline'
 require 'etc'
@@ -11,23 +11,33 @@ options = {}
 parser = OptionParser.new do |opts|
   opts.banner = 'Usage: rl <command> [<options>]'
   opts.separator ''
-  opts.separator 'Control a USB rocket launcher device.'
-  opts.separator "Valid commands are: #{RocketLauncher::ACTIONS.keys.join(', ')}."
+  opts.separator 'Controls an USB rocket launcher device.'
+  opts.separator 'Valid commands are:' #{RocketLauncher::ACTIONS.keys.join(', ')}."
+
+  opts.separator '  down : moves the turret down. Accept a time param. (donw 0.5)'
+  opts.separator '    up : moves the turret up. Accept a time param. (up 0.5)'
+  opts.separator '  left : turns the turret to the left. Accept a time param. (left 3)'
+  opts.separator ' right : turns the turret to the right. Accept a time param. (right 3)'
+  opts.separator '  fire : shots a missile. Accept the number of missile to shot. (fire 2)'
+  opts.separator '  stop : interrupt current action. (stop)'
+  opts.separator '  park : moves the turret to the start position. (park)'
+  opts.separator ''
+
   opts.separator 'Options:'
   opts.on('-c', '--command COMMAND', 'Command to execute') do |c|
     options[:c] = c
   end
-  opts.on('-t', '--time TIME', Float, 'Duration time for the command') do |t|
-    options[:t] = t
+  opts.on('-p', '--param PARAM', Float, 'A command parameter') do |p|
+    options[:p] = p
   end
-  opts.on('-f', '--file COMMAND_LIST', 'Load list of commands by specific file') do |f|
+  opts.on('-f', '--file COMMAND_LIST', 'Load a list of commands by specific file') do |f|
     options[:f] = f
   end
   opts.on('-i', '--iterative', 'Open a command console') do |i|
     options[:i] = i
   end
   opts.on_tail('-v', '--version', 'Print version') { puts RocketLauncher::VERSION; exit }
-  opts.on_tail('-h', '--help', 'Show this help message') { puts opts; exit }
+  opts.on_tail('-h', '--help', 'Show this help') { puts opts; exit }
 end
 begin
   parser.parse!(ARGV)
@@ -43,14 +53,15 @@ end
 
 def run_commands(rl, commands)
   commands.each do |command|
-    c, time = command.split(/\s+/)
+    c, param = command.split(/\s+/)
+    puts "#{c} #{param}"
     begin
-      if time && rl.method(c).arity == 2
-        rl.send(c, time.to_f)
+      if param && RocketLauncher.instance_method(c).parameters.first.size == 2
+        rl.send(c, param.to_f)
       else
         rl.send(c)
       end
-    rescue NoMethodError
+    rescue NoMethodError, NameError
       puts 'Invalid command'
     end
   end
@@ -74,12 +85,11 @@ if options[:i]
 elsif options[:f]
   rl = RocketLauncher.new
   data = File.open(options[:f]).read
-  lines = data.split
-  run_commands(rl, lines)
+  run_commands(rl, data.lines)
 elsif options[:c]
   rl = RocketLauncher.new
-  if options[:t] && rl.method(options[:c]).arity == 2
-    rl.send(options[:c], options[:t])
+  if options[:p] && rl.method(options[:c]).arity == 2
+    rl.send(options[:c], options[:p])
   else
     rl.send(options[:c])
   end
