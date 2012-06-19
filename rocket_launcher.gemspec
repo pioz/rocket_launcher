@@ -19,6 +19,5 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib', 'ext']
   s.extensions    = ['ext/extconf.rb']
 
-  # specify any dependencies here; for example:
-  # s.add_development_dependency 'rspec'
+  s.requirements  = ['libusb1.0 - Debian package name: libusb-1.0-0-dev - Mac port package name: libusb-devel']
 end

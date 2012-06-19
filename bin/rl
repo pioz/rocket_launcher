@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-$LOAD_PATH << 'lib' << 'ext'
+#$LOAD_PATH << 'lib' << 'ext'
 
 require 'readline'
 require 'etc'
@@ -9,7 +9,7 @@ require 'rocket_launcher'
 
 options = {}
 parser = OptionParser.new do |opts|
-  opts.banner = 'Usage: rl <command> [<options>]'
+  opts.banner = 'Usage: rl <options>'
   opts.separator ''
   opts.separator 'Controls an USB rocket launcher device.'
   opts.separator 'Valid commands are:' #{RocketLauncher::ACTIONS.keys.join(', ')}."
@@ -82,10 +82,12 @@ if options[:i]
       rl.stop
     end
   end
+  rl.close
 elsif options[:f]
   rl = RocketLauncher.new
   data = File.open(options[:f]).read
   run_commands(rl, data.lines)
+  rl.close
 elsif options[:c]
   rl = RocketLauncher.new
   if options[:p] && rl.method(options[:c]).arity == 2
@@ -93,6 +95,7 @@ elsif options[:c]
   else
     rl.send(options[:c])
   end
+  rl.close
 else
   puts parser.help; exit
 end
