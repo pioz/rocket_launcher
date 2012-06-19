@@ -1,6 +1,6 @@
 # Rocket Launcher
 
-A Ruby library to use your USB Rocket Launcher!
+A Ruby library to control your USB Rocket Launcher device!
 
 ![image](http://i.imgur.com/JkxCg.jpg)
 

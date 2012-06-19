@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ['Enrico Pilotto']
   s.email       = ['enrico@megiston.it']
   s.homepage    = ''
-  s.summary     = %q{Library to control a USB Thunder Rocket Launcher}
-  s.description = %q{Library to control a USB Thunder Rocket Launcher.}
+  s.summary     = %q{A Ruby library to control your USB Rocket Launcher device}
+  s.description = %q{A Ruby library to control your USB Rocket Launcher device.}
 
   s.rubyforge_project = 'rocket_launcher'
 
