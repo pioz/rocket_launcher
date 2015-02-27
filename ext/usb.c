@@ -12,7 +12,7 @@ typedef struct
 VALUE error;
 
 void
-usb_free (USB *usb)
+rl_usb_free (USB *usb)
 {
   if (usb->handler)
     libusb_close (usb->handler);
@@ -22,7 +22,7 @@ usb_free (USB *usb)
 }
 
 VALUE
-usb_alloc (VALUE class)
+rl_usb_alloc (VALUE class)
 {
   USB *usb = (USB *) malloc (sizeof (USB));
   usb->ctx = NULL;
@@ -30,11 +30,11 @@ usb_alloc (VALUE class)
   int r = libusb_init (&usb->ctx);
   if (r < 0)
     rb_raise (error, "Failed to init libusb");
-  return Data_Wrap_Struct (class, 0, usb_free, usb);
+  return Data_Wrap_Struct (class, 0, rl_usb_free, usb);
 }
 
 VALUE
-open_device (VALUE self, VALUE vid, VALUE pid)
+rl_open_device (VALUE self, VALUE vid, VALUE pid)
 {
   USB *usb;
   Data_Get_Struct (self, USB, usb);
@@ -45,7 +45,7 @@ open_device (VALUE self, VALUE vid, VALUE pid)
 }
 
 VALUE
-close_device (VALUE self)
+rl_close_device (VALUE self)
 {
   USB *usb;
   Data_Get_Struct (self, USB, usb);
@@ -56,7 +56,7 @@ close_device (VALUE self)
 }
 
 VALUE
-write (VALUE self, VALUE cmd)
+rl_write (VALUE self, VALUE cmd)
 {
   USB *usb;
   Data_Get_Struct (self, USB, usb);
@@ -71,8 +71,8 @@ Init_usb ()
 {
   error = rb_define_class ("USBError", rb_eStandardError);
   VALUE usb = rb_define_class ("USB", rb_cObject);
-  rb_define_alloc_func (usb, usb_alloc);
-  rb_define_method (usb, "open", open_device, 2);
-  rb_define_method (usb, "close", close_device, 0);
-  rb_define_method (usb, "write", write, 1);
+  rb_define_alloc_func (usb, rl_usb_alloc);
+  rb_define_method (usb, "open", rl_open_device, 2);
+  rb_define_method (usb, "close", rl_close_device, 0);
+  rb_define_method (usb, "write", rl_write, 1);
 }
