@@ -14,7 +14,7 @@ parser = OptionParser.new do |opts|
   opts.separator 'Controls an USB rocket launcher device.'
   opts.separator 'Valid commands are:' #{RocketLauncher::ACTIONS.keys.join(', ')}."
 
-  opts.separator '  down : moves the turret down. Accept a time param. (donw 0.5)'
+  opts.separator '  down : moves the turret down. Accept a time param in seconds. (down 0.5)'
   opts.separator '    up : moves the turret up. Accept a time param. (up 0.5)'
   opts.separator '  left : turns the turret to the left. Accept a time param. (left 3)'
   opts.separator ' right : turns the turret to the right. Accept a time param. (right 3)'
