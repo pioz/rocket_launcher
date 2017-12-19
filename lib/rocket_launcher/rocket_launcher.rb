@@ -10,7 +10,7 @@ class RocketLauncher
     :park  => 0x00
   }
 
-  def initialize(vendor_id = 8483, product_id = 4112)
+  def initialize(vendor_id = 0x2123, product_id = 0x1010)
     @usb = USB.new
     @usb.open(vendor_id, product_id)
   end
@@ -24,11 +24,11 @@ class RocketLauncher
   end
 
   def fire(missiles = 1)
+    missiles = missiles.to_i
     missiles = 4 if missiles > 4
-    missiles.to_i.times do
+    missiles.times do |i|
       @usb.write(ACTIONS[:fire])
-      sleep 4
-      stop
+      sleep 4 if i+1 != missiles
     end
   end
 

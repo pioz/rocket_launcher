@@ -6,14 +6,12 @@ require 'mkmf'
 
 INCLUDE_DIRS = [
   RbConfig::CONFIG['includedir'],
-  '/opt/local/include',
   '/usr/local/include',
   '/usr/include'
 ]
 
 LIB_DIRS = [
   RbConfig::CONFIG['libdir'],
-  '/opt/local/lib',
   '/usr/local/lib',
   '/usr/lib'
 ]
