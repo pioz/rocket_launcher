@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-#$LOAD_PATH << 'lib' << 'ext'
+$LOAD_PATH << 'lib' << 'ext'
 
 require 'readline'
 require 'etc'
@@ -18,7 +18,7 @@ parser = OptionParser.new do |opts|
   opts.separator '    up : moves the turret up. Accept a time param. (up 0.5)'
   opts.separator '  left : turns the turret to the left. Accept a time param. (left 3)'
   opts.separator ' right : turns the turret to the right. Accept a time param. (right 3)'
-  opts.separator '  fire : shots a missile. Accept the number of missile to shot. (fire 2)'
+  opts.separator '  fire : shots a missile. (fire)'
   opts.separator '  stop : interrupt current action. (stop)'
   opts.separator '  park : moves the turret to the start position. (park)'
   opts.separator ''

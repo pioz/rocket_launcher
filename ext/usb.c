@@ -56,10 +56,11 @@ rl_close_device (VALUE self)
 }
 
 VALUE
-rl_write (VALUE self, VALUE cmd)
+rl_write (VALUE self, VALUE cmd, VALUE mode)
 {
   USB *usb;
   Data_Get_Struct (self, USB, usb);
+  DATA[0] = mode == Qtrue ? 0x03 : 0x02;
   DATA[1] = NUM2CHR (cmd);
   if (libusb_control_transfer (usb->handler, 0x21, 0x9, 0, 0, DATA, 8, 0) != 8)
     rb_raise (error, "Write error");
@@ -74,5 +75,5 @@ Init_usb ()
   rb_define_alloc_func (usb, rl_usb_alloc);
   rb_define_method (usb, "open", rl_open_device, 2);
   rb_define_method (usb, "close", rl_close_device, 0);
-  rb_define_method (usb, "write", rl_write, 1);
+  rb_define_method (usb, "write", rl_write, 2);
 }

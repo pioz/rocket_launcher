@@ -20,32 +20,35 @@ class RocketLauncher
   end
 
   def stop
-    @usb.write(ACTIONS[:stop])
+    @usb.write(ACTIONS[:stop], false)
   end
 
-  def fire(missiles = 1)
-    missiles = missiles.to_i
-    missiles = 4 if missiles > 4
-    missiles.times do |i|
-      @usb.write(ACTIONS[:fire])
-      sleep 4 if i+1 != missiles
-    end
+  def fire
+    light(true)
+    @usb.write(ACTIONS[:fire], false)
+    sleep 3.5
+    @usb.write(ACTIONS[:stop], false)
+    light(false)
   end
 
   [:down, :up, :left, :right].each do |dir|
     define_method dir do |time = 0.1|
-      @usb.write(ACTIONS[dir])
+      @usb.write(ACTIONS[dir], false)
       sleep time
       stop
     end
   end
 
   def park
-    @usb.write(ACTIONS[:down])
+    @usb.write(ACTIONS[:down], false)
     sleep 1
-    @usb.write(ACTIONS[:left])
+    @usb.write(ACTIONS[:left], false)
     sleep 6
     stop
+  end
+
+  def light(status)
+    @usb.write(status ? 0x01 : 0x00, true)
   end
 
 end
