@@ -20,4 +20,6 @@ Gem::Specification.new do |s|
   s.extensions    = ['ext/extconf.rb']
 
   s.requirements  = ['libusb1.0 - Debian package name: libusb-1.0-0-dev - Mac port package name: libusb-devel']
+
+  s.add_development_dependency 'rake', '~> 13'
 end
